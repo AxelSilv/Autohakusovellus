@@ -3,7 +3,6 @@ package org.axel.autohakusovellus;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -49,19 +48,18 @@ public class SearchActivity extends AppCompatActivity {
         StatusText = findViewById(R.id.StatusText);
         fetchData();
     }
+
     public void fetchData() {
         new Thread(() -> {
             try {
                 ObjectMapper objectMapper = new ObjectMapper();
                 JsonNode metadata = objectMapper.readTree(new URL(API_URL));
-
                 JsonNode areaNames = metadata.get("variables").get(0).get("valueTexts");
                 JsonNode areaCodes = metadata.get("variables").get(0).get("values");
 
                 for (int i = 0; i < areaNames.size(); i++) {
                     areaCodeMap.put(areaNames.get(i).asText().toLowerCase(), areaCodes.get(i).asText());
                 }
-
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -72,15 +70,13 @@ public class SearchActivity extends AppCompatActivity {
         new Thread(() -> {
             try {
                 ObjectMapper objectMapper = new ObjectMapper();
-
                 String areaCode = areaCodeMap.get(city.toLowerCase());
                 if (areaCode == null) {
-                    runOnUiThread(()->StatusText.setText("Haku epäonnistui, kaupunkia ei olemassa tai se on kirjoitettu väärin."));
+                    runOnUiThread(() -> StatusText.setText("Haku epäonnistui, kaupunkia ei olemassa tai se on kirjoitettu väärin."));
                     return;
                 }
 
                 JsonNode jsonRequest = objectMapper.readTree(context.getResources().openRawResource(R.raw.query));
-
                 ((ObjectNode) jsonRequest.get("query").get(0).get("selection")).putArray("values").add(areaCode);
                 ((ObjectNode) jsonRequest.get("query").get(2).get("selection")).putArray("values").add("0");
                 ((ObjectNode) jsonRequest.get("query").get(3).get("selection")).putArray("values").add(String.valueOf(year));
@@ -106,7 +102,6 @@ public class SearchActivity extends AppCompatActivity {
                 }
 
                 JsonNode responseData = objectMapper.readTree(response.toString());
-
                 JsonNode vehicleTypes = responseData.get("dimension").get("Ajoneuvoluokka").get("category").get("label");
                 JsonNode values = responseData.get("value");
 
@@ -121,14 +116,11 @@ public class SearchActivity extends AppCompatActivity {
                     storage.addCarData(new CarData(type, amount));
                 }
 
-                runOnUiThread(() -> {
-                    StatusText.setText("Haku onnistui");
-                    Log.d("SearchActivity", "StatusText updated to: Haku onnistui");
-                });
+                runOnUiThread(() -> StatusText.setText("Haku onnistui"));
 
             } catch (IOException e) {
                 e.printStackTrace();
-                runOnUiThread(()->StatusText.setText("Haku epäonnistui, kaupunkia ei olemassa tai se on kirjoitettu väärin."));
+                runOnUiThread(() -> StatusText.setText("Haku epäonnistui, kaupunkia ei olemassa tai se on kirjoitettu väärin."));
             }
         }).start();
     }
@@ -143,6 +135,7 @@ public class SearchActivity extends AppCompatActivity {
         }
         try {
             int year = Integer.parseInt(yearString);
+            StatusText.setText("Haku onnistui");
             getData(this, city, year);
         } catch (NumberFormatException e) {
             StatusText.setText("Haku epäonnistui, kaupunkia ei olemassa tai se on kirjoitettu väärin.");

@@ -46,11 +46,17 @@ public class ListInfoActivity extends AppCompatActivity {
         adapter = new InfoAdapter(storage.getCarData());
         recyclerView.setAdapter(adapter);
 
+        ArrayList<CarData> data = storage.getCarData();
         int total = 0;
-        for (CarData car : storage.getCarData()) {
+        StringBuilder builder = new StringBuilder();
+
+        for (CarData car : data) {
+            builder.append(car.getType()).append(": ").append(car.getAmount()).append("\n");
             total += car.getAmount();
         }
-        CarInfoText.setText("Yhteensä: " + total);
+
+        builder.append("\nYhteensä: ").append(total);
+        CarInfoText.setText(builder.toString());
     }
 
 }
