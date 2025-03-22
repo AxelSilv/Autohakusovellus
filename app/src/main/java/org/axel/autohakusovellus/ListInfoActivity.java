@@ -34,17 +34,23 @@ public class ListInfoActivity extends AppCompatActivity {
 
         CityText = findViewById(R.id.CityText);
         YearText = findViewById(R.id.YearText);
+        CarInfoText = findViewById(R.id.CarInfoText);
         recyclerView = findViewById(R.id.recyclerView);
 
         CarDataStorage storage = CarDataStorage.getInstance();
         CityText.setText(storage.getCity());
         YearText.setText(String.valueOf(storage.getYear()));
 
-        recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         adapter = new InfoAdapter(storage.getCarData());
         recyclerView.setAdapter(adapter);
+
+        int total = 0;
+        for (CarData car : storage.getCarData()) {
+            total += car.getAmount();
+        }
+        CarInfoText.setText("Yhteensä: " + total);
     }
 
 }

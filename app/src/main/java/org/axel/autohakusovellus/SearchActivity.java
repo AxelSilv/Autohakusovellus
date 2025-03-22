@@ -121,7 +121,10 @@ public class SearchActivity extends AppCompatActivity {
                     storage.addCarData(new CarData(type, amount));
                 }
 
-                runOnUiThread(()->StatusText.setText("Haku onnistui"));
+                runOnUiThread(() -> {
+                    StatusText.setText("Haku onnistui");
+                    Log.d("SearchActivity", "StatusText updated to: Haku onnistui");
+                });
 
             } catch (IOException e) {
                 e.printStackTrace();
